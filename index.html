@@ -979,359 +979,107 @@
   $("toHint").textContent = "Estimated: —";
   refreshSwapButton();
 
-<!-- ONLY THESE SECTIONS CHANGED:
-1) Added small CSS for warning visuals + hazard icons
-2) Updated showComplianceModal() to a nicer layout (same words)
-3) Added hazard/danger icons to all warning modals (same words)
-Everything else stays the same.
--->
-
-<style>
-
-
-  .notice{
-    border: 1px solid rgba(255,255,255,.10);
-    background: rgba(0,0,0,.18);
-    border-radius: 18px;
-    padding: 14px;
-  }
-
-  .notice-header{
-    display:flex;
-    align-items:flex-start;
-    gap:12px;
-    margin-bottom:10px;
-  }
-
-  .hazard{
-    width:42px;height:42px;
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex:none;
-    background: rgba(255,204,102,.14);
-    border: 1px solid rgba(255,204,102,.30);
-    box-shadow: 0 14px 30px rgba(0,0,0,.35);
-  }
-
-  .hazard svg{display:block}
-
-  .notice-title{
-    margin:0;
-    font-weight:1000;
-    letter-spacing:.15px;
-    font-size:16px;
-    line-height:1.25;
-    color: rgba(234,240,255,.94);
-  }
-
-  .notice-sub{
-    margin:6px 0 0;
-    color: rgba(234,240,255,.70);
-    font-size: 13px;
-    line-height: 1.45;
-  }
-
-  .badge-row{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-    margin-top:12px;
-  }
-
-  .badge{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:8px 10px;
-    border-radius:999px;
-    font-size:12px;
-    font-weight:900;
-    letter-spacing:.1px;
-    background: rgba(255,255,255,.06);
-    border: 1px solid rgba(255,255,255,.10);
-    color: rgba(234,240,255,.86);
-  }
-
-  .badge .mini{
-    width:18px;height:18px;border-radius:8px;
-    display:flex;align-items:center;justify-content:center;
-    background: rgba(47,123,255,.18);
-    border: 1px solid rgba(47,123,255,.28);
-    font-weight:1000;
-  }
-
-  .warn-line{
-    display:flex;
-    gap:10px;
-    align-items:flex-start;
-    margin-top:12px;
-    padding-top:12px;
-    border-top: 1px solid rgba(255,255,255,.08);
-  }
-
-  .warn-ico{
-    width:26px;height:26px;
-    border-radius:10px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    flex:none;
-    background: rgba(255,59,59,.12);
-    border: 1px solid rgba(255,59,59,.26);
-  }
-
-  .warn-ico.warn{
-    background: rgba(255,204,102,.12);
-    border-color: rgba(255,204,102,.26);
-  }
-
-  .warn-ico svg{display:block}
 </style>
+  .notice{
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 14px;
+}
+.notice-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.hazard{
+  width:42px;height:42px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;flex:none;
+  background: rgba(255,204,102,.14);
+  border: 1px solid rgba(255,204,102,.30);
+  box-shadow: 0 14px 30px rgba(0,0,0,.35);
+}
+.hazard svg{display:block}
+.notice-title{
+  margin:0;font-weight:1000;letter-spacing:.15px;font-size:16px;line-height:1.25;
+  color: rgba(234,240,255,.94);
+}
+.notice-sub{margin:6px 0 0;color: rgba(234,240,255,.70);font-size:13px;line-height:1.45;}
+.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;
+  font-size:12px;font-weight:900;letter-spacing:.1px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(234,240,255,.86);
+}
+.badge .mini{
+  width:18px;height:18px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background: rgba(47,123,255,.18);
+  border: 1px solid rgba(47,123,255,.28);
+  font-weight:1000;
+}
+.warn-line{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);}
+.warn-ico{
+  width:26px;height:26px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none;
+  background: rgba(255,59,59,.12);
+  border: 1px solid rgba(255,59,59,.26);
+}
+.warn-ico.warn{background: rgba(255,204,102,.12);border-color: rgba(255,204,102,.26);}
+.warn-ico svg{display:block}
 
+
+  
+
+</script>
 
   function showComplianceModal() {
-    openModal({
-      title: "Compliance notice",
-      tone: "warn",
-      bodyHtml: `
-        <div class="notice">
-          <div class="notice-header">
-            <div class="hazard" aria-hidden="true">
-              <!-- Hazard triangle -->
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3.2L1.9 20.8c-.4.7.1 1.6.9 1.6h18.4c.8 0 1.3-.9.9-1.6L12 3.2z"
-                      stroke="rgba(255,204,102,.95)" stroke-width="2" />
-                <path d="M12 9v5" stroke="rgba(255,204,102,.95)" stroke-width="2" stroke-linecap="round"/>
-                <path d="M12 17.2h.01" stroke="rgba(255,204,102,.95)" stroke-width="3" stroke-linecap="round"/>
-              </svg>
+  openModal({
+    title: "Compliance notice",
+    tone: "warn",
+    bodyHtml: `
+      <div class="notice">
+        <div class="notice-header">
+          <div class="hazard" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3.2L1.9 20.8c-.4.7.1 1.6.9 1.6h18.4c.8 0 1.3-.9.9-1.6L12 3.2z"
+                    stroke="rgba(255,204,102,.95)" stroke-width="2" />
+              <path d="M12 9v5" stroke="rgba(255,204,102,.95)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 17.2h.01" stroke="rgba(255,204,102,.95)" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <p class="notice-title">
+              Analytics Firms such as Chainalysis are now screening your wallet address against U.S. sanctions lists,
+              including those maintained by the Office of Foreign Assets Control (OFAC), as well as datasets that associate
+              addresses with illicit activity.
+            </p>
+            <p class="notice-sub">
+              If an address is identified as a sanctioned entity, it is blocked from further interacting with the interface.
+            </p>
+
+            <div class="badge-row">
+              <span class="badge"><span class="mini">OF</span>OFAC lists</span>
+              <span class="badge"><span class="mini">AI</span>Illicit datasets</span>
+              <span class="badge"><span class="mini">AS</span>Address screening</span>
+              <span class="badge"><span class="mini">NO</span>No identity KYC</span>
             </div>
-            <div>
-              <p class="notice-title">
-                Analytics Firms such as Chainalysis are now screening your wallet address against U.S. sanctions lists,
-                including those maintained by the Office of Foreign Assets Control (OFAC), as well as datasets that associate
-                addresses with illicit activity.
-              </p>
-              <p class="notice-sub">
-                If an address is identified as a sanctioned entity, it is blocked from further interacting with the interface.
-              </p>
 
-              <div class="badge-row">
-                <span class="badge"><span class="mini">OF</span>OFAC lists</span>
-                <span class="badge"><span class="mini">AI</span>Illicit activity datasets</span>
-                <span class="badge"><span class="mini">AS</span>Address screening</span>
-                <span class="badge"><span class="mini">NO</span>No identity KYC</span>
+            <div class="warn-line">
+              <div class="warn-ico warn" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 8v6" stroke="rgba(255,204,102,.95)" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M12 17.5h.01" stroke="rgba(255,204,102,.95)" stroke-width="3" stroke-linecap="round"/>
+                </svg>
               </div>
-
-              <div class="warn-line">
-                <div class="warn-ico warn" aria-hidden="true">
-                  <!-- exclamation -->
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 8v6" stroke="rgba(255,204,102,.95)" stroke-width="2" stroke-linecap="round"/>
-                    <path d="M12 17.5h.01" stroke="rgba(255,204,102,.95)" stroke-width="3" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <div style="color:rgba(234,240,255,.70);font-size:13px;line-height:1.45;">
-                  This is a simulated interface for demonstration purposes only.
-                </div>
+              <div style="color:rgba(234,240,255,.70);font-size:13px;line-height:1.45;">
+                This is a simulated interface for demonstration purposes only.
               </div>
             </div>
           </div>
         </div>
-      `,
-      buttons: [
-        { label: "Continue", primary: true, onClick: () => { closeModal(true); setConnectedUI(); } }
-      ]
-    });
-  }
-
-  function hazardRowSVG(color="rgba(255,204,102,.95)") {
-    return `
-      <div class="notice-header" style="margin-bottom:8px;">
-        <div class="hazard" aria-hidden="true" style="background:rgba(255,204,102,.12);border-color:rgba(255,204,102,.26);">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <path d="M12 3.2L1.9 20.8c-.4.7.1 1.6.9 1.6h18.4c.8 0 1.3-.9.9-1.6L12 3.2z"
-                  stroke="${color}" stroke-width="2" />
-            <path d="M12 9v5" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
-            <path d="M12 17.2h.01" stroke="${color}" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div style="min-width:0;">
-    `;
-  }
-
-  function hazardRowClose() {
-    return `</div></div>`;
-  }
-
-  function warn_NotAvailable_A7A5() {
-    openModal({
-      title: "Not available",
-      tone: "default",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,204,102,.95)")}
-          <p style="color:rgba(234,240,255,.85);margin:0;">You can’t trade this token using the interface.</p>
-          <p style="margin:10px 0 0;">
-            Unavailable at this time: Uniswap delists tokens deemed to be developed or backed by sanctioned entities,
-            such as A7A5 which is Russian-based and backed by the ruble.
-          </p>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [{ label: "Close", primary: true, onClick: () => closeModal() }]
-    });
-  }
-
-  function warn_Malicious(tokenName) {
-    openModal({
-      title: "Malicious token detected",
-      tone: "danger",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,59,59,.95)")}
-          <p style="margin:0;"><strong>${escapeHtml(tokenName)}</strong> has been flagged as malicious. Always do your own research before proceeding.</p>
-          <ul class="bullets">
-            <li><span class="flag">!</span><div>Flagged as malicious</div></li>
-            <li><span class="flag">!</span><div>Not listed on leading U.S. exchanges</div></li>
-          </ul>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [
-        { label: "Go back", onClick: () => closeModal() },
-        { label: "Continue", primary: true, onClick: () => closeModal() }
-      ]
-    });
-  }
-
-  function warn_100SellFee(tokenName) {
-    openModal({
-      title: "100% sell fee detected",
-      tone: "danger",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,59,59,.95)")}
-          <p style="margin:0;"><strong>${escapeHtml(tokenName)}</strong> has been flagged as unsellable. Swapping this token may result in a loss of your funds.</p>
-          <ul class="bullets">
-            <li><span class="flag">%</span><div>Charges <span style="color:var(--danger);font-weight:950;">100%</span> fee when sold</div></li>
-            <li><span class="flag">!</span><div>Not listed on leading U.S. exchanges</div></li>
-          </ul>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [
-        { label: "Go back", onClick: () => closeModal() },
-        { label: "Continue", primary: true, onClick: () => closeModal() }
-      ]
-    });
-  }
-
-  function warn_Impersonator(tokenName) {
-    openModal({
-      title: "Impersonator",
-      tone: "warn",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,204,102,.95)")}
-          <p style="margin:0;"><strong>${escapeHtml(tokenName)}</strong> has been flagged for attempting to impersonate a different token.</p>
-          <p style="margin:10px 0 0;">It may not be the token you intend to swap. Use the contract address to be sure you are swapping the token you intend to.</p>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [
-        { label: "Go back", onClick: () => closeModal() },
-        { label: "Continue", primary: true, onClick: () => closeModal() }
-      ]
-    });
-  }
-
-  function warn_Honeypot(tokenName) {
-    openModal({
-      title: "Honeypot",
-      tone: "danger",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,59,59,.95)")}
-          <p style="margin:0;"><strong>${escapeHtml(tokenName)}</strong> has been flagged as a potential honeypot token.</p>
-          <p style="margin:10px 0 0;">This token may prevent selling or impose hidden restrictions. Always do your own research before proceeding.</p>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [
-        { label: "Go back", onClick: () => closeModal() },
-        { label: "Continue", primary: true, onClick: () => closeModal() }
-      ]
-    });
-  }
-
-  function warn_Spam(tokenName) {
-    openModal({
-      title: "Spam",
-      tone: "warn",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,204,102,.95)")}
-          <p style="margin:0;"><strong>${escapeHtml(tokenName)}</strong> has been flagged as a potential spam token based on onchain airdrop activity.</p>
-          <p style="margin:10px 0 0;">Always do your own research before proceeding.</p>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [
-        { label: "Go back", onClick: () => closeModal() },
-        { label: "Continue", primary: true, onClick: () => closeModal() }
-      ]
-    });
-  }
-
-  function warn_HighFee(tokenName) {
-    openModal({
-      title: "High buy or sell fee",
-      tone: "danger",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,59,59,.95)")}
-          <p style="margin:0;"><strong>${escapeHtml(tokenName)}</strong> charges a high fee when bought or sold.</p>
-          <p style="margin:10px 0 0;">Swapping this token may result in a loss of your funds.</p>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [
-        { label: "Go back", onClick: () => closeModal() },
-        { label: "Continue", primary: true, onClick: () => closeModal() }
-      ]
-    });
-  }
-
-  function warn_WarningNotOnCEX(tokenName) {
-    openModal({
-      title: "Warning",
-      tone: "warn",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,204,102,.95)")}
-          <p style="margin:0;"><strong>${escapeHtml(tokenName)}</strong> is not traded on a leading U.S. centralized exchange such as Coinbase, Kraken, or Gemini.</p>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [
-        { label: "Go back", onClick: () => closeModal() },
-        { label: "Continue", primary: true, onClick: () => closeModal() }
-      ]
-    });
-  }
-
-  function warn_BlockaidFrozen() {
-    openModal({
-      title: "Transaction blocked",
-      tone: "danger",
-      bodyHtml: `
-        ${hazardRowSVG("rgba(255,59,59,.95)")}
-          <p style="margin:0">
-            Blockaid has simulated this transaction before it has been executed and determined that the order called by you and executed by the counterparty are different.
-            This transaction and all associated funds have been frozen
-          </p>
-          ${poweredByBlockaid()}
-        ${hazardRowClose()}
-      `,
-      buttons: [{ label: "Close", primary: true, onClick: () => closeModal() }]
-    });
-  }
-
-</script>
+      </div>
+    `,
+    buttons: [
+      { label: "Continue", primary: true, onClick: () => { closeModal(true); setConnectedUI(); } }
+    ]
+  });
+}
 </body>
 </html>
 
