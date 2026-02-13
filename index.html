@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BA Swap</title>
+  <meta name="color-scheme" content="dark" />
+  <style>
+    :root{
+      --bg0:#060a14;
+      --bg1:#0b1022;
+      --text:#eaf0ff;
+      --muted2:rgba(234,240,255,.55);
+      --blue:#2f7bff;
+      --blue2:#0a5bff;
+      --danger:#ff3b3b;
+      --warn:#ffcc66;
+      --good:#28d17c;
+      --shadow: 0 22px 55px rgba(0,0,0,.55);
+      --shadow2: 0 10px 28px rgba(0,0,0,.45);
+      --r24:24px;
+      --t: 180ms cubic-bezier(.2,.8,.2,1);
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family: var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 20% -10%, rgba(47,123,255,.28), transparent 58%),
+        radial-gradient(900px 700px at 85% 0%, rgba(47,123,255,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      position:relative;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      background-image:
+        linear-gradient(90deg, rgba(0,0,0,.22) 1px, transparent 1px),
+        linear-gradient(rgba(0,0,0,.22) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity:.55;
+      pointer-events:none;
+      mix-blend-mode: multiply;
+    }
+
+    .wrap{min-height:100%;display:flex;flex-direction:column;}
+    header{
+      position:sticky;top:0;z-index:10;
+      backdrop-filter: blur(12px);
+      background: linear-gradient(180deg, rgba(6,10,20,.78), rgba(6,10,20,.20));
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .nav{
+      max-width:1080px;margin:0 auto;
+      padding:16px 18px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;user-select:none;}
+    .logo{
+      width:40px;height:40px;border-radius:12px;
+      background: linear-gradient(135deg, #000 0%, #000 42%, var(--blue) 42%, var(--blue) 100%);
+      box-shadow: 0 10px 18px rgba(0,0,0,.35);
+      outline: 1px solid rgba(255,255,255,.08);
+    }
+    .brand h1{font-size:15px;margin:0;letter-spacing:.2px;font-weight:800;}
+    .brand span{display:block;font-size:12px;color:var(--muted2);margin-top:2px;font-weight:600;}
+    .nav-right{display:flex;align-items:center;gap:10px;}
+
+    .pill{
+      display:none;align-items:center;gap:8px;
+      padding:9px 12px;border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 10px 22px rgba(0,0,0,.25);
+      font-size:12px;color:var(--text);white-space:nowrap;
+    }
+    .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--good);box-shadow:0 0 0 4px rgba(40,209,124,.12);}
+
+    main{flex:1;display:flex;justify-content:center;padding:48px 18px 64px;}
+    .stage{width:100%;max-width:520px;}
+
+    .card{
+      background: linear-gradient(180deg, rgba(14,22,48,.92), rgba(11,18,39,.92));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: var(--shadow);
+      border-radius: var(--r24);
+      overflow:hidden;position:relative;
+    }
+    .card::after{
+      content:"";position:absolute;inset:-2px;
+      background: radial-gradient(420px 240px at 20% 0%, rgba(47,123,255,.18), transparent 60%);
+      pointer-events:none;
+    }
+    .card-inner{position:relative;padding:18px;}
+
+    .card-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:4px 2px 14px;}
+    .title{font-size:18px;font-weight:850;letter-spacing:.2px;margin:0;}
+    .subtitle{font-size:12px;color:var(--muted2);margin-top:4px;}
+
+    .ghost-btn{
+      appearance:none;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      padding:10px 12px;border-radius:14px;
+      cursor:pointer;
+      transition: transform var(--t), background var(--t), border-color var(--t);
+      font-weight:750;font-size:13px;
+    }
+    .ghost-btn:hover{background:rgba(255,255,255,.06);transform:translateY(-1px);}
+    .ghost-btn:active{transform:translateY(0px);}
+
+    .primary{
+      appearance:none;border:none;
+      background: linear-gradient(180deg, var(--blue), var(--blue2));
+      color:white;padding:14px 14px;border-radius:16px;
+      cursor:pointer;font-weight:850;letter-spacing:.2px;font-size:14px;width:100%;
+      transition: transform var(--t), filter var(--t), opacity var(--t);
+      box-shadow: 0 16px 30px rgba(47,123,255,.18);
+    }
+    .primary:hover{filter:brightness(1.06);transform:translateY(-1px);}
+    .primary:active{transform:translateY(0px);}
+    .primary:disabled{opacity:.55;cursor:not-allowed;transform:none;filter:none;}
+
+    .panel{
+      background: rgba(0,0,0,.16);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      padding:14px;margin-top:12px;
+    }
+    .panel-hd{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted2);margin-bottom:10px;}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+    .token-btn{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      color:var(--text);cursor:pointer;
+      transition: transform var(--t), background var(--t), border-color var(--t);
+      font-weight:850;min-width:160px;justify-content:space-between;
+    }
+    .token-btn:hover{background:rgba(255,255,255,.06);transform:translateY(-1px);}
+    .token-left{display:flex;align-items:center;gap:10px;min-width:0;}
+    .token-name{font-size:13px;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width: 160px;}
+    .chev{
+      width:10px;height:10px;border-right:2px solid rgba(234,240,255,.70);border-bottom:2px solid rgba(234,240,255,.70);
+      transform: rotate(45deg);margin-left:6px;flex:none;
+    }
+
+    .ticon{
+      width:28px;height:28px;border-radius:10px;
+      display:inline-flex;align-items:center;justify-content:center;
+      font-weight:950;font-size:12px;letter-spacing:.3px;
+      color: rgba(234,240,255,.92);
+      background: rgba(47,123,255,.18);
+      border: 1px solid rgba(47,123,255,.35);
+      box-shadow:0 10px 18px rgba(0,0,0,.25);
+      flex:none;
+    }
+    .ticon.dark{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.12);
+    }
+
+    .amt{flex:1;text-align:right;}
+    .amt input{
+      width:100%;background:transparent;border:none;outline:none;color:var(--text);
+      font-size:26px;font-weight:900;letter-spacing:.2px;text-align:right;padding:0;
+    }
+    .amt input::placeholder{color:rgba(234,240,255,.28);}
+    .hint{margin-top:8px;font-size:12px;color:var(--muted2);display:flex;justify-content:space-between;align-items:center;gap:12px;}
+
+    .divider{display:flex;justify-content:center;margin:10px 0;}
+    .swap-arrow{
+      width:42px;height:42px;border-radius:14px;background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow2);
+    }
+
+    .fineprint{margin-top:14px;font-size:12px;color:rgba(234,240,255,.55);line-height:1.45;}
+
+    .modal-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,.72);
+      display:none;align-items:center;justify-content:center;z-index:999;padding:18px;
+    }
+    .modal{
+      width:100%;max-width:560px;border-radius:22px;
+      background: linear-gradient(180deg, rgba(14,22,48,.98), rgba(11,18,39,.98));
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      transform: translateY(6px) scale(.99);
+      opacity:0;
+      transition: opacity var(--t), transform var(--t);
+    }
+    .modal-backdrop.show .modal{transform: translateY(0) scale(1);opacity:1;}
+    .modal-hd{
+      padding:18px 18px 12px;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .modal-title{margin:0;font-size:18px;font-weight:950;letter-spacing:.1px;line-height:1.2;}
+    .modal-title.danger{color:var(--danger);}
+    .modal-title.warn{color:var(--warn);}
+    .modal-x{
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      color: var(--text);
+      border-radius: 12px;width:40px;height:40px;
+      cursor:pointer;transition: transform var(--t), background var(--t);
+      flex:none;
+    }
+    .modal-x:hover{background:rgba(255,255,255,.07);transform:translateY(-1px);}
+    .modal-bd{padding:16px 18px 18px;color:rgba(234,240,255,.86);line-height:1.55;font-size:14px;}
+    .bullets{
+      margin:14px 0 0;padding:0;list-style:none;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;background:rgba(0,0,0,.16);overflow:hidden;
+    }
+    .bullets li{
+      display:flex;gap:10px;padding:12px 12px;border-top:1px solid rgba(255,255,255,.06);align-items:flex-start;
+    }
+    .bullets li:first-child{border-top:none;}
+    .flag{
+      width:18px;height:18px;border-radius:6px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px;
+      font-weight:900;font-size:11px;color:rgba(234,240,255,.85);
+    }
+    .muted{
+      color: rgba(234,240,255,.62);
+      font-size: 12px;
+      margin-top:10px;
+      text-align:center;
+    }
+    .modal-ft{padding:16px 18px 18px;display:flex;gap:12px;border-top:1px solid rgba(255,255,255,.06);}
+    .btn{
+      flex:1;padding:13px 14px;border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      color:var(--text);font-weight:900;cursor:pointer;
+      transition: transform var(--t), background var(--t);
+    }
+    .btn:hover{background:rgba(255,255,255,.07);transform:translateY(-1px);}
+    .btn:active{transform:translateY(0px);}
+    .btn.primary{border:none;background: linear-gradient(180deg, var(--blue), var(--blue2));}
+
+    .picker{display:flex;flex-direction:column;gap:12px;}
+    .search{
+      width:100%;display:flex;gap:10px;align-items:center;
+      padding:12px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.14);
+    }
+    .search input{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-size:14px;}
+    .list{
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;overflow:hidden;background:rgba(0,0,0,.16);
+      max-height:320px;overflow:auto;
+    }
+    .item{
+      display:flex;justify-content:space-between;align-items:center;
+      padding:12px 12px;border-top:1px solid rgba(255,255,255,.06);
+      cursor:pointer;transition: background var(--t);
+    }
+    .item:first-child{border-top:none;}
+    .item:hover{background:rgba(255,255,255,.05);}
+    .item-left{display:flex;align-items:center;gap:10px;min-width:0;}
+    .item-name{
+      font-weight:900;letter-spacing:.15px;font-size:13px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px;
+    }
+    .right-mini{
+      font-size:12px;
+      color: rgba(234,240,255,.70);
+      font-weight:900;
+      flex:none;
+    }
+
+    .success{
+      display:none;
+      position:fixed; inset:0;
+      background:#000;
+      z-index:2000;
+      overflow:hidden;
+    }
+    .success img{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      filter: saturate(1.15) contrast(1.08);
+    }
+    .success .overlay{
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.75));
+    }
+    .success .content{
+      position:relative;
+      height:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      text-align:center;
+    }
+    .success h1{
+      font-size: clamp(34px, 5vw, 74px);
+      margin:0;
+      letter-spacing:1px;
+      font-weight:1000;
+      text-transform:uppercase;
+      text-shadow: 0 18px 40px rgba(0,0,0,.55);
+    }
+    .success .sub{
+      margin-top:14px;
+      font-size: clamp(14px, 2vw, 18px);
+      color: rgba(255,255,255,.86);
+      font-weight:700;
+    }
+    .success .back{
+      position:absolute;
+      top:18px; left:18px;
+      z-index:1;
+    }
+
+    @media (max-width:540px){
+      .stage{max-width:100%;}
+      .card-inner{padding:16px;}
+      .token-btn{min-width:150px;}
+      .amt input{font-size:24px;}
+    }
+    button:focus-visible,.token-btn:focus-visible,.ghost-btn:focus-visible,input:focus-visible{
+      outline:2px solid rgba(47,123,255,.85);
+      outline-offset:2px;
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>BA Swap <span>Demo Decentralized Exchange Interface</span></h1>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <div class="pill" id="connectedPill" role="status" aria-live="polite">
+          <span class="dot"></span>
+          <span id="pillText">Connected</span>
+        </div>
+        <button class="ghost-btn" id="connectBtn" type="button">Blockchain Association</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="stage">
+      <section class="card" id="connectCard">
+        <div class="card-inner">
+          <div class="card-top">
+            <div>
+              <p class="title" style="margin:0;">Connect to continue</p>
+              <p class="subtitle">Static UI simulation: no real wallet signing, no real blockchain interaction.</p>
+            </div>
+          </div>
+
+          <button class="primary" id="connectPrimary" type="button">Connect Wallet</button>
+          <p class="fineprint">This is a front-end prototype for demonstrating user flow and warning screens.</p>
+        </div>
+      </section>
+
+      <section class="card" id="swapCard" style="display:none;">
+        <div class="card-inner">
+          <div class="card-top">
+            <div>
+              <h2 class="title">Swap</h2>
+              <div class="subtitle">Prices are simulated; warnings appear only when you select flagged items.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-hd">
+              <span>From</span>
+              <span id="fromHint">Price: —</span>
+            </div>
+            <div class="row">
+              <button class="token-btn" id="fromTokenBtn" type="button">
+                <span class="token-left">
+                  <span class="ticon" id="fromIcon">?</span>
+                  <span class="token-name" id="fromTokenName">Select token</span>
+                </span>
+                <span class="chev" aria-hidden="true"></span>
+              </button>
+              <div class="amt">
+                <input id="amountInput" inputmode="decimal" placeholder="0.0" aria-label="Amount" />
+                <div class="hint">
+                  <span id="amountUsd">~$0.00</span>
+                  <button class="ghost-btn" id="maxBtn" type="button" style="padding:6px 10px;border-radius:12px;">Max</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider">
+            <div class="swap-arrow" title="Swap direction (demo)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M7 7h11l-3-3" stroke="rgba(234,240,255,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M17 17H6l3 3" stroke="rgba(234,240,255,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-hd">
+              <span>To</span>
+              <span id="toHint">Estimated: —</span>
+            </div>
+            <div class="row">
+              <button class="token-btn" id="toTokenBtn" type="button">
+                <span class="token-left">
+                  <span class="ticon dark" id="toIcon">U</span>
+                  <span class="token-name" id="toTokenName">Select token</span>
+                </span>
+                <span class="chev" aria-hidden="true"></span>
+              </button>
+              <div class="amt">
+                <input id="toAmount" placeholder="0.0" aria-label="Estimated output" disabled />
+                <div class="hint">
+                  <span id="toUsd">~$0.00</span>
+                  <span style="color:rgba(234,240,255,.55);font-size:12px;">Simulated</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-hd">
+              <span>Recipient</span>
+              <span id="recHint">Required</span>
+            </div>
+            <div class="row">
+              <button class="token-btn" id="recipientBtn" type="button" style="min-width:220px;">
+                <span class="token-left">
+                  <span class="ticon dark" id="recIcon">R</span>
+                  <span class="token-name" id="recipientName">Select counterparty</span>
+                </span>
+                <span class="chev" aria-hidden="true"></span>
+              </button>
+              <div style="flex:1;text-align:right;color:rgba(234,240,255,.55);font-size:12px;">&nbsp;</div>
+            </div>
+          </div>
+
+          <button class="primary" id="swapBtn" type="button" disabled>Enter amount</button>
+
+          <p class="fineprint" id="swapFineprint">
+            No warnings for Lindsay. Brian swaps are blocked at execution time.
+          </p>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal" role="document">
+    <div class="modal-hd">
+      <h3 class="modal-title" id="modalTitle">Title</h3>
+      <button class="modal-x" id="modalCloseX" type="button" aria-label="Close">✕</button>
+    </div>
+    <div class="modal-bd" id="modalBody"></div>
+    <div class="modal-ft" id="modalFooter"></div>
+  </div>
+</div>
+
+<div class="success" id="successScreen" aria-hidden="true">
+  <img alt="Crowd cheering" src="https://images.pexels.com/photos/19191521/pexels-photo-19191521.jpeg?cs=srgb&dl=pexels-gergely-badacsonyi-806268712-19191521.jpg&fm=jpg">
+  <div class="overlay"></div>
+  <div class="content">
+    <div>
+      <h1>CONGRATS! YOU PASSED MARKET STRUCTURE</h1>
+      <div class="sub">Transaction completed successfully (simulated)</div>
+    </div>
+  </div>
+  <div class="back">
+    <button class="ghost-btn" type="button" onclick="hideSuccess()">Back</button>
+  </div>
+</div>
+
+<script>
+  const PRICES = {
+    "ETH": 2000,
+    "USDC": 1,
+    "BTC": 80000,
+    "A7A5": 0.12,
+    "McLarencoin": 3.75,
+    "Murphycoin": 0.0042,
+    "Dutchcoin": 12.40,
+    "Germcoin": 7.10,
+    "Sprucecoin": 0.83,
+    "Nistlercoin": 150.00,
+    "Meadowlarkcoin": 0.02
+  };
+
+  const TOKENS = [
+    "ETH","USDC","BTC",
+    "A7A5","McLarencoin","Murphycoin","Dutchcoin","Germcoin","Sprucecoin","Nistlercoin","Meadowlarkcoin"
+  ];
+
+  const RECIPIENTS = ["Lindsay", "Brian"];
+
+  const ICON_TEXT = {
+    "ETH": "Ξ",
+    "USDC": "U",
+    "BTC": "₿",
+    "A7A5": "A7",
+    "McLarencoin": "MC",
+    "Murphycoin": "MU",
+    "Dutchcoin": "DU",
+    "Germcoin": "GE",
+    "Sprucecoin": "SP",
+    "Nistlercoin": "NI",
+    "Meadowlarkcoin": "ME",
+  };
+
+  let connected = false;
+  let fromToken = null;
+  let toToken = "USDC";
+  let recipient = null;
+
+  const $ = (id) => document.getElementById(id);
+
+  // ===== PATCH STATE: cancel pending modal close teardown =====
+  let modalCloseTimer = null;
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, s => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[s]));
+  }
+
+  function setConnectedUI() {
+    $("connectCard").style.display = "none";
+    $("swapCard").style.display = "block";
+    $("connectBtn").style.display = "none";
+    $("connectedPill").style.display = "inline-flex";
+    connected = true;
+    setToToken(toToken);
+    refreshSwapButton();
+    recalc();
+  }
+
+  // ===== Modal controller (PATCHED) =====
+  function openModal({ title, tone = "default", bodyHtml = "", buttons = [] }) {
+    // Cancel any delayed teardown from a previous close
+    if (modalCloseTimer) {
+      clearTimeout(modalCloseTimer);
+      modalCloseTimer = null;
+    }
+
+    $("modalTitle").textContent = title;
+    $("modalTitle").className = "modal-title" + (tone === "danger" ? " danger" : tone === "warn" ? " warn" : "");
+    $("modalBody").innerHTML = bodyHtml;
+
+    const footer = $("modalFooter");
+    footer.innerHTML = "";
+    buttons.forEach((b) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn" + (b.primary ? " primary" : "");
+      btn.textContent = b.label;
+      btn.addEventListener("click", () => b.onClick && b.onClick());
+      footer.appendChild(btn);
+    });
+
+    $("modalBackdrop").style.display = "flex";
+    $("modalBackdrop").setAttribute("aria-hidden", "false");
+    requestAnimationFrame(() => $("modalBackdrop").classList.add("show"));
+  }
+
+  // Add immediate-close option so picker can close without delayed teardown
+  function closeModal(immediate = false) {
+    $("modalBackdrop").classList.remove("show");
+    $("modalBackdrop").setAttribute("aria-hidden", "true");
+
+    if (modalCloseTimer) {
+      clearTimeout(modalCloseTimer);
+      modalCloseTimer = null;
+    }
+
+    if (immediate) {
+      $("modalBackdrop").style.display = "none";
+      $("modalFooter").innerHTML = "";
+      return;
+    }
+
+    modalCloseTimer = setTimeout(() => {
+      $("modalBackdrop").style.display = "none";
+      $("modalFooter").innerHTML = "";
+      modalCloseTimer = null;
+    }, 160);
+  }
+
+  $("modalCloseX").addEventListener("click", () => closeModal());
+  $("modalBackdrop").addEventListener("click", (e) => { if (e.target === $("modalBackdrop")) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("modalBackdrop").style.display === "flex") closeModal(); });
+
+  function showComplianceModal() {
+    openModal({
+      title: "Analytics Firms such as Chainalysis are now screening your wallet address against U.S. sanctions lists, including those maintained by the Office of Foreign Assets Control (OFAC), as well as datasets that associate addresses with illicit activity.",
+      bodyHtml: `
+        <p>
+          If an address is identified as a sanctioned entity, it is blocked from further interacting with the interface.
+        </p>
+      `,
+      buttons: [
+        { label: "Continue", primary: true, onClick: () => { closeModal(true); setConnectedUI(); } }
+      ]
+    });
+  }
+
+  // ===== Picker modal (PATCHED click behavior) =====
+  function pickerModal({ title, items, placeholder, onPick }) {
+    let query = "";
+
+    function renderList(){
+      const filtered = items.filter(name => name.toLowerCase().includes(query.toLowerCase()));
+      const rows = filtered.map((name) => {
+        const price = PRICES[name] ?? 0;
+        return `
+          <div class="item" data-name="${escapeHtml(name)}">
+            <div class="item-left">
+              <span class="ticon">${escapeHtml(ICON_TEXT[name] || name.slice(0,2).toUpperCase())}</span>
+              <div class="item-name">${escapeHtml(name)}</div>
+            </div>
+            <div class="right-mini">$${fmtPrice(price)}</div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="picker">
+          <div class="search">
+            <span style="opacity:.8">⌕</span>
+            <input id="pickerSearch" placeholder="${escapeHtml(placeholder)}" value="${escapeHtml(query)}" />
+          </div>
+          <div class="list" id="pickerList">
+            ${rows || `<div style="padding:14px;color:rgba(234,240,255,.60)">No results</div>`}
+          </div>
+        </div>
+      `;
+    }
+
+    openModal({ title, bodyHtml: renderList(), buttons: [{ label: "Close", onClick: () => closeModal() }] });
+
+    const searchEl = document.getElementById("pickerSearch");
+    searchEl.focus();
+
+    function wireClicks(){
+      const els = $("modalBody").querySelectorAll(".item");
+      els.forEach(el => {
+        el.addEventListener("click", () => {
+          const name = el.getAttribute("data-name");
+
+          // Close picker immediately (no delayed teardown), then open warnings.
+          closeModal(true);
+          setTimeout(() => onPick(name), 0);
+        });
+      });
+    }
+
+    searchEl.addEventListener("input", () => {
+      query = searchEl.value || "";
+      $("modalBody").innerHTML = renderList();
+      document.getElementById("pickerSearch").addEventListener("input", searchEl.oninput);
+      wireClicks();
+    });
+
+    wireClicks();
+  }
+
+  function poweredByBlockaid(){
+    return `<div class="muted">Powered by Blockaid (simulated)</div>`;
+  }
+
+  function warn_NotAvailable_A7A5() {
+    openModal({
+      title: "Not available",
+      tone: "default",
+      bodyHtml: `
+        <p style="color:rgba(234,240,255,.85)">You can’t trade this token using the interface.</p>
+        <p>
+          Unavailable at this time: Uniswap delists tokens deemed to be developed or backed by sanctioned entities,
+          such as A7A5 which is Russian-based and backed by the ruble.
+        </p>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [{ label: "Close", primary: true, onClick: () => closeModal() }]
+    });
+  }
+
+  function warn_Malicious(tokenName) {
+    openModal({
+      title: "Malicious token detected",
+      tone: "danger",
+      bodyHtml: `
+        <p><strong>${escapeHtml(tokenName)}</strong> has been flagged as malicious. Always do your own research before proceeding.</p>
+        <ul class="bullets">
+          <li><span class="flag">!</span><div>Flagged as malicious</div></li>
+          <li><span class="flag">!</span><div>Not listed on leading U.S. exchanges</div></li>
+        </ul>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [
+        { label: "Go back", onClick: () => closeModal() },
+        { label: "Continue", primary: true, onClick: () => closeModal() }
+      ]
+    });
+  }
+
+  function warn_100SellFee(tokenName) {
+    openModal({
+      title: "100% sell fee detected",
+      tone: "danger",
+      bodyHtml: `
+        <p><strong>${escapeHtml(tokenName)}</strong> has been flagged as unsellable. Swapping this token may result in a loss of your funds.</p>
+        <ul class="bullets">
+          <li><span class="flag">%</span><div>Charges <span style="color:var(--danger);font-weight:950;">100%</span> fee when sold</div></li>
+          <li><span class="flag">!</span><div>Not listed on leading U.S. exchanges</div></li>
+        </ul>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [
+        { label: "Go back", onClick: () => closeModal() },
+        { label: "Continue", primary: true, onClick: () => closeModal() }
+      ]
+    });
+  }
+
+  function warn_Impersonator(tokenName) {
+    openModal({
+      title: "Impersonator",
+      tone: "warn",
+      bodyHtml: `
+        <p><strong>${escapeHtml(tokenName)}</strong> has been flagged for attempting to impersonate a different token.</p>
+        <p>It may not be the token you intend to swap. Use the contract address to be sure you are swapping the token you intend to.</p>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [
+        { label: "Go back", onClick: () => closeModal() },
+        { label: "Continue", primary: true, onClick: () => closeModal() }
+      ]
+    });
+  }
+
+  function warn_Honeypot(tokenName) {
+    openModal({
+      title: "Honeypot",
+      tone: "danger",
+      bodyHtml: `
+        <p><strong>${escapeHtml(tokenName)}</strong> has been flagged as a potential honeypot token.</p>
+        <p>This token may prevent selling or impose hidden restrictions. Always do your own research before proceeding.</p>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [
+        { label: "Go back", onClick: () => closeModal() },
+        { label: "Continue", primary: true, onClick: () => closeModal() }
+      ]
+    });
+  }
+
+  function warn_Spam(tokenName) {
+    openModal({
+      title: "Spam",
+      tone: "warn",
+      bodyHtml: `
+        <p><strong>${escapeHtml(tokenName)}</strong> has been flagged as a potential spam token based on onchain airdrop activity.</p>
+        <p>Always do your own research before proceeding.</p>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [
+        { label: "Go back", onClick: () => closeModal() },
+        { label: "Continue", primary: true, onClick: () => closeModal() }
+      ]
+    });
+  }
+
+  function warn_HighFee(tokenName) {
+    openModal({
+      title: "High buy or sell fee",
+      tone: "danger",
+      bodyHtml: `
+        <p><strong>${escapeHtml(tokenName)}</strong> charges a high fee when bought or sold.</p>
+        <p>Swapping this token may result in a loss of your funds.</p>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [
+        { label: "Go back", onClick: () => closeModal() },
+        { label: "Continue", primary: true, onClick: () => closeModal() }
+      ]
+    });
+  }
+
+  function warn_WarningNotOnCEX(tokenName) {
+    openModal({
+      title: "Warning",
+      tone: "warn",
+      bodyHtml: `
+        <p><strong>${escapeHtml(tokenName)}</strong> is not traded on a leading U.S. centralized exchange such as Coinbase, Kraken, or Gemini.</p>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [
+        { label: "Go back", onClick: () => closeModal() },
+        { label: "Continue", primary: true, onClick: () => closeModal() }
+      ]
+    });
+  }
+
+  function warn_BlockaidFrozen() {
+    openModal({
+      title: "Transaction blocked",
+      tone: "danger",
+      bodyHtml: `
+        <p style="margin-top:0">
+          Blockaid has simulated this transaction before it has been executed and determined that the order called by you and executed by the counterparty are different.
+          This transaction and all associated funds have been frozen
+        </p>
+        ${poweredByBlockaid()}
+      `,
+      buttons: [{ label: "Close", primary: true, onClick: () => closeModal() }]
+    });
+  }
+
+  function maybeTokenWarning(token){
+    if (token === "A7A5") warn_NotAvailable_A7A5();
+    else if (token === "McLarencoin") warn_Malicious(token);
+    else if (token === "Murphycoin") warn_100SellFee(token);
+    else if (token === "Dutchcoin") warn_Impersonator(token);
+    else if (token === "Germcoin") warn_Honeypot(token);
+    else if (token === "Sprucecoin") warn_Spam(token);
+    else if (token === "Nistlercoin") warn_HighFee(token);
+    else if (token === "Meadowlarkcoin") warn_WarningNotOnCEX(token);
+  }
+
+  function setFromToken(name){
+    fromToken = name;
+    $("fromTokenName").textContent = name || "Select token";
+    $("fromIcon").textContent = ICON_TEXT[name] || "?";
+    $("fromHint").textContent = name ? `Price: $${fmtPrice(PRICES[name])}` : "Price: —";
+    refreshSwapButton();
+    recalc();
+  }
+  function setToToken(name){
+    toToken = name;
+    $("toTokenName").textContent = name || "Select token";
+    $("toIcon").textContent = ICON_TEXT[name] || "T";
+    refreshSwapButton();
+    recalc();
+  }
+  function setRecipient(name){
+    recipient = name;
+    $("recipientName").textContent = name || "Select counterparty";
+    $("recIcon").textContent = name ? name.slice(0,1).toUpperCase() : "R";
+    refreshSwapButton();
+  }
+
+  function fmtPrice(p){
+    if (!Number.isFinite(p)) return "—";
+    if (p >= 1000) return p.toLocaleString(undefined,{maximumFractionDigits:0});
+    if (p >= 1) return p.toLocaleString(undefined,{maximumFractionDigits:2});
+    return p.toLocaleString(undefined,{maximumFractionDigits:4});
+  }
+
+  function refreshSwapButton(){
+    const amt = ($("amountInput").value || "").trim();
+    const amtNum = Number(amt);
+
+    const btn = $("swapBtn");
+    if (!connected) { btn.disabled = true; btn.textContent = "Connect wallet"; return; }
+    if (!fromToken || !toToken) { btn.disabled = true; btn.textContent = "Select tokens"; return; }
+    if (!amt || !Number.isFinite(amtNum) || amtNum <= 0) { btn.disabled = true; btn.textContent = "Enter amount"; return; }
+    if (!recipient) { btn.disabled = true; btn.textContent = "Select counterparty"; return; }
+
+    btn.disabled = false;
+    btn.textContent = "Swap";
+  }
+
+  function recalc(){
+    const amtNum = Number(($("amountInput").value || "").trim());
+    if (!fromToken || !toToken || !Number.isFinite(amtNum) || amtNum <= 0){
+      $("amountUsd").textContent = "~$0.00";
+      $("toAmount").value = "";
+      $("toUsd").textContent = "~$0.00";
+      $("toHint").textContent = "Estimated: —";
+      return;
+    }
+    const fromP = PRICES[fromToken];
+    const toP = PRICES[toToken];
+    const usd = amtNum * fromP;
+    const out = usd / toP;
+
+    $("amountUsd").textContent = `~$${usd.toFixed(2)}`;
+    $("toAmount").value = out.toFixed(6).replace(/\.?0+$/,'');
+    $("toUsd").textContent = `~$${usd.toFixed(2)}`;
+    $("toHint").textContent = `Estimated: ${$("toAmount").value} ${toToken}`;
+  }
+
+  function showSuccess(){
+    $("successScreen").style.display = "block";
+    $("successScreen").setAttribute("aria-hidden","false");
+  }
+  function hideSuccess(){
+    $("successScreen").style.display = "none";
+    $("successScreen").setAttribute("aria-hidden","true");
+  }
+  window.hideSuccess = hideSuccess;
+
+  $("connectBtn").addEventListener("click", showComplianceModal);
+  $("connectPrimary").addEventListener("click", showComplianceModal);
+
+  $("fromTokenBtn").addEventListener("click", () => {
+    pickerModal({
+      title: "Select a token",
+      items: TOKENS,
+      placeholder: "Search token…",
+      onPick: (name) => { setFromToken(name); maybeTokenWarning(name); }
+    });
+  });
+
+  $("toTokenBtn").addEventListener("click", () => {
+    pickerModal({
+      title: "Select a token",
+      items: TOKENS,
+      placeholder: "Search token…",
+      onPick: (name) => { setToToken(name); maybeTokenWarning(name); }
+    });
+  });
+
+  $("recipientBtn").addEventListener("click", () => {
+    pickerModal({
+      title: "Select counterparty",
+      items: RECIPIENTS,
+      placeholder: "Search name…",
+      onPick: (name) => { setRecipient(name); }
+    });
+  });
+
+  $("amountInput").addEventListener("input", () => {
+    refreshSwapButton();
+    recalc();
+  });
+
+  $("maxBtn").addEventListener("click", () => {
+    $("amountInput").value = "1";
+    $("amountInput").dispatchEvent(new Event("input"));
+  });
+
+  $("swapBtn").addEventListener("click", () => {
+    refreshSwapButton();
+    if ($("swapBtn").disabled) return;
+
+    if (recipient === "Brian") {
+      warn_BlockaidFrozen();
+      return;
+    }
+    if (recipient === "Lindsay") {
+      showSuccess();
+      return;
+    }
+  });
+
+  setToToken(toToken);
+  $("toHint").textContent = "Estimated: —";
+  refreshSwapButton();
+</script>
+</body>
+</html>
+
