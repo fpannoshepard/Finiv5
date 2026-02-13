@@ -987,7 +987,7 @@ Everything else stays the same.
 -->
 
 <style>
-  /* ===== Add this anywhere inside your existing <style> (prefer near modal styles) ===== */
+
 
   .notice{
     border: 1px solid rgba(255,255,255,.10);
@@ -1090,7 +1090,7 @@ Everything else stays the same.
   .warn-ico svg{display:block}
 </style>
 
-  /* ===== Replace ONLY your showComplianceModal() with this ===== */
+
   function showComplianceModal() {
     openModal({
       title: "Compliance notice",
@@ -1146,10 +1146,6 @@ Everything else stays the same.
     });
   }
 
-  /* ===== OPTIONAL but recommended: add hazard/danger signs to ALL warnings by updating each warning body.
-     Replace ONLY the first line of each warning bodyHtml with a header row like below.
-     To save you time, here are drop-in edits for each warning function bodyHtml. ===== */
-
   function hazardRowSVG(color="rgba(255,204,102,.95)") {
     return `
       <div class="notice-header" style="margin-bottom:8px;">
@@ -1169,7 +1165,6 @@ Everything else stays the same.
     return `</div></div>`;
   }
 
-  // Re-define warning functions with hazard visuals (same words, just wrapped)
   function warn_NotAvailable_A7A5() {
     openModal({
       title: "Not available",
