@@ -336,6 +336,49 @@
       outline:2px solid rgba(47,123,255,.85);
       outline-offset:2px;
     }
+    .notice{
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  border-radius: 18px;
+  padding: 14px;
+}
+.notice-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.hazard{
+  width:42px;height:42px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;flex:none;
+  background: rgba(255,204,102,.14);
+  border: 1px solid rgba(255,204,102,.30);
+  box-shadow: 0 14px 30px rgba(0,0,0,.35);
+}
+.hazard svg{display:block}
+.notice-title{
+  margin:0;font-weight:1000;letter-spacing:.15px;font-size:16px;line-height:1.25;
+  color: rgba(234,240,255,.94);
+}
+.notice-sub{margin:6px 0 0;color: rgba(234,240,255,.70);font-size:13px;line-height:1.45;}
+.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+.badge{
+  display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;
+  font-size:12px;font-weight:900;letter-spacing:.1px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.10);
+  color: rgba(234,240,255,.86);
+}
+.badge .mini{
+  width:18px;height:18px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  background: rgba(47,123,255,.18);
+  border: 1px solid rgba(47,123,255,.28);
+  font-weight:1000;
+}
+.warn-line{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);}
+.warn-ico{
+  width:26px;height:26px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none;
+  background: rgba(255,59,59,.12);
+  border: 1px solid rgba(255,59,59,.26);
+}
+.warn-ico.warn{background: rgba(255,204,102,.12);border-color: rgba(255,204,102,.26);}
+.warn-ico svg{display:block}
+
   </style>
 </head>
 
@@ -611,21 +654,7 @@
   $("modalBackdrop").addEventListener("click", (e) => { if (e.target === $("modalBackdrop")) closeModal(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("modalBackdrop").style.display === "flex") closeModal(); });
 
-  function showComplianceModal() {
-    openModal({
-      title: "Analytics Firms such as Chainalysis are now screening your wallet address against U.S. sanctions lists, including those maintained by the Office of Foreign Assets Control (OFAC), as well as datasets that associate addresses with illicit activity.",
-      bodyHtml: `
-        <p>
-          If an address is identified as a sanctioned entity, it is blocked from further interacting with the interface.
-        </p>
-      `,
-      buttons: [
-        { label: "Continue", primary: true, onClick: () => { closeModal(true); setConnectedUI(); } }
-      ]
-    });
-  }
-
-  // ===== Picker modal (PATCHED click behavior) =====
+ 
   function pickerModal({ title, items, placeholder, onPick }) {
     let query = "";
 
@@ -921,6 +950,59 @@
   }
   window.hideSuccess = hideSuccess;
 
+  function showComplianceModal() {
+  openModal({
+    title: "Compliance notice",
+    tone: "warn",
+    bodyHtml: `
+      <div class="notice">
+        <div class="notice-header">
+          <div class="hazard" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3.2L1.9 20.8c-.4.7.1 1.6.9 1.6h18.4c.8 0 1.3-.9.9-1.6L12 3.2z"
+                    stroke="rgba(255,204,102,.95)" stroke-width="2" />
+              <path d="M12 9v5" stroke="rgba(255,204,102,.95)" stroke-width="2" stroke-linecap="round"/>
+              <path d="M12 17.2h.01" stroke="rgba(255,204,102,.95)" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <p class="notice-title">
+              Analytics Firms such as Chainalysis are now screening your wallet address against U.S. sanctions lists,
+              including those maintained by the Office of Foreign Assets Control (OFAC), as well as datasets that associate
+              addresses with illicit activity.
+            </p>
+            <p class="notice-sub">
+              If an address is identified as a sanctioned entity, it is blocked from further interacting with the interface.
+            </p>
+
+            <div class="badge-row">
+              <span class="badge"><span class="mini">OF</span>OFAC lists</span>
+              <span class="badge"><span class="mini">AI</span>Illicit datasets</span>
+              <span class="badge"><span class="mini">AS</span>Address screening</span>
+              <span class="badge"><span class="mini">NO</span>No identity KYC</span>
+            </div>
+
+            <div class="warn-line">
+              <div class="warn-ico warn" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 8v6" stroke="rgba(255,204,102,.95)" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M12 17.5h.01" stroke="rgba(255,204,102,.95)" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div style="color:rgba(234,240,255,.70);font-size:13px;line-height:1.45;">
+                This is a simulated interface for demonstration purposes only.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    buttons: [
+      { label: "Continue", primary: true, onClick: () => { closeModal(true); setConnectedUI(); } }
+    ]
+  });
+}
+
   $("connectBtn").addEventListener("click", showComplianceModal);
   $("connectPrimary").addEventListener("click", showComplianceModal);
 
@@ -978,108 +1060,11 @@
   setToToken(toToken);
   $("toHint").textContent = "Estimated: —";
   refreshSwapButton();
-
-</style>
-  .notice{
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(0,0,0,.18);
-  border-radius: 18px;
-  padding: 14px;
-}
-.notice-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
-.hazard{
-  width:42px;height:42px;border-radius:14px;
-  display:flex;align-items:center;justify-content:center;flex:none;
-  background: rgba(255,204,102,.14);
-  border: 1px solid rgba(255,204,102,.30);
-  box-shadow: 0 14px 30px rgba(0,0,0,.35);
-}
-.hazard svg{display:block}
-.notice-title{
-  margin:0;font-weight:1000;letter-spacing:.15px;font-size:16px;line-height:1.25;
-  color: rgba(234,240,255,.94);
-}
-.notice-sub{margin:6px 0 0;color: rgba(234,240,255,.70);font-size:13px;line-height:1.45;}
-.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
-.badge{
-  display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;
-  font-size:12px;font-weight:900;letter-spacing:.1px;
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.10);
-  color: rgba(234,240,255,.86);
-}
-.badge .mini{
-  width:18px;height:18px;border-radius:8px;display:flex;align-items:center;justify-content:center;
-  background: rgba(47,123,255,.18);
-  border: 1px solid rgba(47,123,255,.28);
-  font-weight:1000;
-}
-.warn-line{display:flex;gap:10px;align-items:flex-start;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);}
-.warn-ico{
-  width:26px;height:26px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex:none;
-  background: rgba(255,59,59,.12);
-  border: 1px solid rgba(255,59,59,.26);
-}
-.warn-ico.warn{background: rgba(255,204,102,.12);border-color: rgba(255,204,102,.26);}
-.warn-ico svg{display:block}
-
-
   
-
+  
 </script>
 
-  function showComplianceModal() {
-  openModal({
-    title: "Compliance notice",
-    tone: "warn",
-    bodyHtml: `
-      <div class="notice">
-        <div class="notice-header">
-          <div class="hazard" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M12 3.2L1.9 20.8c-.4.7.1 1.6.9 1.6h18.4c.8 0 1.3-.9.9-1.6L12 3.2z"
-                    stroke="rgba(255,204,102,.95)" stroke-width="2" />
-              <path d="M12 9v5" stroke="rgba(255,204,102,.95)" stroke-width="2" stroke-linecap="round"/>
-              <path d="M12 17.2h.01" stroke="rgba(255,204,102,.95)" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          </div>
-          <div>
-            <p class="notice-title">
-              Analytics Firms such as Chainalysis are now screening your wallet address against U.S. sanctions lists,
-              including those maintained by the Office of Foreign Assets Control (OFAC), as well as datasets that associate
-              addresses with illicit activity.
-            </p>
-            <p class="notice-sub">
-              If an address is identified as a sanctioned entity, it is blocked from further interacting with the interface.
-            </p>
-
-            <div class="badge-row">
-              <span class="badge"><span class="mini">OF</span>OFAC lists</span>
-              <span class="badge"><span class="mini">AI</span>Illicit datasets</span>
-              <span class="badge"><span class="mini">AS</span>Address screening</span>
-              <span class="badge"><span class="mini">NO</span>No identity KYC</span>
-            </div>
-
-            <div class="warn-line">
-              <div class="warn-ico warn" aria-hidden="true">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 8v6" stroke="rgba(255,204,102,.95)" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M12 17.5h.01" stroke="rgba(255,204,102,.95)" stroke-width="3" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div style="color:rgba(234,240,255,.70);font-size:13px;line-height:1.45;">
-                This is a simulated interface for demonstration purposes only.
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `,
-    buttons: [
-      { label: "Continue", primary: true, onClick: () => { closeModal(true); setConnectedUI(); } }
-    ]
-  });
-}
+  
 </body>
 </html>
 
